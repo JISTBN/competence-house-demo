@@ -2,30 +2,102 @@
 <html>
 <head>
   <title>Competence House</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    .house {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .level {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      border: 2px solid #333;
+      background: white;
+    }
+
+    .foundation {
+      background: #e3e8ee;
+    }
+
+    .choices {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .choice {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #333;
+      background: #ffffff;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .lms {
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+    }
+  </style>
 </head>
-<body style="font-family: Arial; max-width: 600px; margin: auto;">
 
-<h1>Learner Role: Celle</h1>
+<body>
+  <div class="container">
+    <h1>Learner Role: Celle</h1>
 
-<div style="border:1px solid #333; padding:15px; margin-bottom:20px;">
-  <h2>Fundament</h2>
-  <strong>Basic 1</strong><br>
-  LMS-dokumentnr: LMS-CELLE-BASIC-01
-</div>
+    <div class="house">
 
-<div style="border:1px solid #333; padding:15px;">
-  <h2>Vælg specialisering</h2>
+      <!-- Fundament -->
+      <div class="level foundation">
+        <div class="label">Fundament</div>
+        <strong>Basic 1</strong>
+        <div class="lms">LMS: LMS-CELLE-BASIC-01</div>
+      </div>
 
-  <div style="margin-bottom:10px;">
-    <strong>Rengøring</strong><br>
-    LMS-dokumentnr: LMS-CELLE-RENG-02
+      <!-- Valg -->
+      <div class="level">
+        <div class="label">Vælg specialisering</div>
+
+        <div class="choices">
+          <div class="choice">
+            <strong>Rengøring</strong>
+            <div class="lms">LMS: LMS-CELLE-RENG-02</div>
+          </div>
+
+          <div class="choice">
+            <strong>Opsætning</strong>
+            <div class="lms">LMS: LMS-CELLE-OPS-03</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
-
-  <div>
-    <strong>Opsætning</strong><br>
-    LMS-dokumentnr: LMS-CELLE-OPS-03
-  </div>
-</div>
-
 </body>
 </html>
