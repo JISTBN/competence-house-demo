@@ -108,6 +108,7 @@ body {
 
 .house {
   width: 700px;
+  height: 600px;
   padding-top: 110px;
   position: relative;
 }
@@ -135,16 +136,15 @@ body {
 }
 
 /* ===== CANVAS ===== */
-.trainings {
+.canvas {
+  position: relative;
   margin-top: 24px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  height: 450px;
 }
 
 /* ===== TRAINING BLOCK ===== */
 .training {
-  position: relative;
+  position: absolute;
   min-width: 120px;
   height: 56px;
   border-radius: 12px;
@@ -153,7 +153,7 @@ body {
   align-items: center;
   padding: 0 16px;
   color: white;
-  cursor: pointer;
+  cursor: grab;
 }
 
 .training.selected {
@@ -205,7 +205,7 @@ body {
           <div class="roof-title">House title</div>
         </div>
 
-        <div id="trainings" class="trainings"></div>
+        <div id="canvas" class="canvas"></div>
 
       </div>
     </div>
@@ -220,17 +220,20 @@ let counter = 1;
 function addTraining() {
   const el = document.createElement("div");
   el.className = "training green";
-  el.style.width = "220px";
   el.textContent = "Block " + counter++;
+  el.style.left = "0px";
+  el.style.top = (counter * 70) + "px";
+  el.style.width = "220px";
 
   const handle = document.createElement("div");
   handle.className = "resize-handle";
   handle.onmousedown = e => startResize(e, el);
 
   el.appendChild(handle);
+  el.onmousedown = e => startDrag(e, el);
   el.onclick = () => select(el);
 
-  document.getElementById("trainings").appendChild(el);
+  document.getElementById("canvas").appendChild(el);
 }
 
 function select(el) {
@@ -242,8 +245,7 @@ function select(el) {
 }
 
 function updateTitle() {
-  if (!selected) return;
-  selected.firstChild.nodeValue = document.getElementById("titleInput").value;
+  if (selected) selected.firstChild.nodeValue = document.getElementById("titleInput").value;
 }
 
 function setColor(color) {
@@ -252,19 +254,41 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-/* ===== PIXEL RESIZE ===== */
-function startResize(e, el) {
-  e.stopPropagation();
+/* ===== DRAG MOVE ===== */
+function startDrag(e, el) {
+  if (e.target.classList.contains("resize-handle")) return;
 
+  e.preventDefault();
   const startX = e.clientX;
-  const startWidth = el.offsetWidth;
-  const houseWidth = document.querySelector(".house").offsetWidth;
+  const startY = e.clientY;
+  const startLeft = el.offsetLeft;
+  const startTop = el.offsetTop;
 
   function onMove(ev) {
-    const delta = ev.clientX - startX;
+    el.style.left = startLeft + (ev.clientX - startX) + "px";
+    el.style.top  = startTop  + (ev.clientY - startY) + "px";
+  }
+
+  function onUp() {
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+  }
+
+  document.addEventListener("mousemove", onMove);
+  document.addEventListener("mouseup", onUp);
+}
+
+/* ===== RESIZE ===== */
+function startResize(e, el) {
+  e.stopPropagation();
+  const startX = e.clientX;
+  const startWidth = el.offsetWidth;
+  const maxWidth = document.querySelector(".house").offsetWidth;
+
+  function onMove(ev) {
     const newWidth = Math.min(
-      houseWidth - 16,
-      Math.max(120, startWidth + delta)
+      maxWidth,
+      Math.max(120, startWidth + (ev.clientX - startX))
     );
     el.style.width = newWidth + "px";
   }
