@@ -21,7 +21,7 @@
       height: 100vh;
     }
 
-    /* ===== SIDEMENU ===== */
+    /* ===== PRIMARY SIDEBAR ===== */
     .sidebar {
       width: 240px;
       background: #ffffff;
@@ -38,6 +38,48 @@
     .menu-item.active {
       background: #eef3ff;
       font-weight: 600;
+    }
+
+    /* ===== SECONDARY PANEL ===== */
+    .subpanel {
+      width: 260px;
+      background: #fafafa;
+      border-right: 1px solid #ddd;
+      padding: 16px;
+    }
+
+    .subpanel h3 {
+      margin-top: 0;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .subpanel-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .subpanel-item.active {
+      background: #e8ecff;
+      font-weight: 600;
+    }
+
+    .subpanel-item.disabled {
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .action {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px dashed #bbb;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
     }
 
     /* ===== MAIN ===== */
@@ -79,48 +121,49 @@
       color: #ffffff;
       font-size: 20px;
       font-weight: 600;
-      letter-spacing: 0.2px;
-    }
-
-    /* ===== TRAINING BAR ===== */
-    .training {
-      margin-top: 24px;
-      height: 56px;
-      border-radius: 12px;
-      background: #e0e0e0;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <!-- VENSTREMENU -->
-    <div class="sidebar">
-      <div class="menu-item active">House Builder</div>
-      <div class="menu-item">Training Cart</div>
-      <div class="menu-item">Competencies</div>
-      <div class="menu-item">House Info</div>
-    </div>
+  <!-- PRIMARY SIDEBAR -->
+  <div class="sidebar">
+    <div class="menu-item active">House Builder</div>
+    <div class="menu-item">Training Cart</div>
+    <div class="menu-item">Competencies</div>
+    <div class="menu-item">House Info</div>
+  </div>
 
-    <!-- MAIN / EDITOR -->
-    <div class="main">
-      <div class="house-wrapper">
-        <div class="house">
+  <!-- SECONDARY PANEL -->
+  <div class="subpanel">
+    <h3>House Builder</h3>
 
-          <div class="roof">
-            <div class="roof-title">House title</div>
-          </div>
+    <div class="subpanel-item active">Content</div>
+    <div class="subpanel-item disabled">Structure</div>
+    <div class="subpanel-item disabled">Dependencies</div>
+    <div class="subpanel-item disabled">Preview</div>
 
-          <!-- ÉN TOM TRÆNINGSBJÆLKE -->
-          <div class="training"></div>
+    <div class="action">➕ Job function or foundation</div>
+    <div class="action">➕ Add cross-functional content</div>
+    <div class="action">➕ Create group</div>
+  </div>
 
+  <!-- MAIN / CANVAS -->
+  <div class="main">
+    <div class="house-wrapper">
+      <div class="house">
+        <div class="roof">
+          <div class="roof-title">House title</div>
         </div>
+        <!-- canvas ændres ikke endnu -->
       </div>
     </div>
-
   </div>
+
+</div>
 
 </body>
 </html>
