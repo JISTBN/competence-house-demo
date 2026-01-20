@@ -57,7 +57,6 @@
     .subpanel-item {
       padding: 10px 12px;
       border-radius: 6px;
-      cursor: pointer;
       margin-bottom: 6px;
       color: #333;
     }
@@ -69,7 +68,6 @@
 
     .subpanel-item.disabled {
       color: #aaa;
-      cursor: not-allowed;
     }
 
     .action {
@@ -89,7 +87,7 @@
       overflow: auto;
     }
 
-    /* ===== HOUSE (USYNLIG RAMME) ===== */
+    /* ===== HOUSE ===== */
     .house-wrapper {
       display: flex;
       justify-content: center;
@@ -122,6 +120,25 @@
       font-size: 20px;
       font-weight: 600;
     }
+
+    /* ===== TRAININGS ===== */
+    .trainings {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .training {
+      height: 56px;
+      border-radius: 12px;
+      background: #2ebf7f;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      color: #ffffff;
+      font-weight: 500;
+    }
   </style>
 </head>
 
@@ -146,24 +163,52 @@
     <div class="subpanel-item disabled">Dependencies</div>
     <div class="subpanel-item disabled">Preview</div>
 
-    <div class="action">➕ Job function or foundation</div>
-    <div class="action">➕ Add cross-functional content</div>
-    <div class="action">➕ Create group</div>
+    <div class="action" onclick="addTraining()">
+      ➕ Job function or foundation
+    </div>
+
+    <div class="action">
+      ➕ Add cross-functional content
+    </div>
+
+    <div class="action">
+      ➕ Create group
+    </div>
   </div>
 
   <!-- MAIN / CANVAS -->
   <div class="main">
     <div class="house-wrapper">
       <div class="house">
+
         <div class="roof">
           <div class="roof-title">House title</div>
         </div>
-        <!-- canvas ændres ikke endnu -->
+
+        <div id="trainings" class="trainings">
+          <!-- nye bjælker kommer her -->
+        </div>
+
       </div>
     </div>
   </div>
 
 </div>
+
+<script>
+  let counter = 1;
+
+  function addTraining() {
+    const container = document.getElementById("trainings");
+
+    const div = document.createElement("div");
+    div.className = "training";
+    div.innerText = "Job function " + counter;
+
+    counter++;
+    container.appendChild(div);
+  }
+</script>
 
 </body>
 </html>
