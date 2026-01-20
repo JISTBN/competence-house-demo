@@ -108,7 +108,6 @@ body {
 
 .house {
   width: 700px;
-  height: 600px;
   padding-top: 110px;
   position: relative;
 }
@@ -216,13 +215,14 @@ body {
 <script>
 let selected = null;
 let counter = 1;
+const ROW_HEIGHT = 72;
 
 function addTraining() {
   const el = document.createElement("div");
   el.className = "training green";
   el.textContent = "Block " + counter++;
   el.style.left = "0px";
-  el.style.top = (counter * 70) + "px";
+  el.style.top = (counter - 1) * ROW_HEIGHT + "px";
   el.style.width = "220px";
 
   const handle = document.createElement("div");
@@ -254,19 +254,25 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-/* ===== DRAG MOVE ===== */
+/* ===== LOCKED DRAG (X ONLY, WITH BOUNDS) ===== */
 function startDrag(e, el) {
   if (e.target.classList.contains("resize-handle")) return;
 
   e.preventDefault();
   const startX = e.clientX;
-  const startY = e.clientY;
   const startLeft = el.offsetLeft;
-  const startTop = el.offsetTop;
+  const fixedTop = el.offsetTop;
+
+  const houseWidth = document.querySelector(".house").offsetWidth;
 
   function onMove(ev) {
-    el.style.left = startLeft + (ev.clientX - startX) + "px";
-    el.style.top  = startTop  + (ev.clientY - startY) + "px";
+    const deltaX = ev.clientX - startX;
+    const newLeft = Math.min(
+      houseWidth - el.offsetWidth,
+      Math.max(0, startLeft + deltaX)
+    );
+    el.style.left = newLeft + "px";
+    el.style.top = fixedTop + "px"; // Y locked
   }
 
   function onUp() {
@@ -278,16 +284,16 @@ function startDrag(e, el) {
   document.addEventListener("mouseup", onUp);
 }
 
-/* ===== RESIZE ===== */
+/* ===== RESIZE (LOCKED TO HOUSE WIDTH) ===== */
 function startResize(e, el) {
   e.stopPropagation();
   const startX = e.clientX;
   const startWidth = el.offsetWidth;
-  const maxWidth = document.querySelector(".house").offsetWidth;
+  const houseWidth = document.querySelector(".house").offsetWidth;
 
   function onMove(ev) {
     const newWidth = Math.min(
-      maxWidth,
+      houseWidth - el.offsetLeft,
       Math.max(120, startWidth + (ev.clientX - startX))
     );
     el.style.width = newWidth + "px";
