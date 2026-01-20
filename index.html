@@ -30,7 +30,6 @@ body {
 
 .menu-item {
   padding: 14px 20px;
-  cursor: pointer;
 }
 
 .menu-item.active {
@@ -97,7 +96,6 @@ body {
 .main {
   flex: 1;
   padding: 48px 24px;
-  overflow: auto;
 }
 
 /* ===== HOUSE ===== */
@@ -141,7 +139,7 @@ body {
   height: 450px;
 }
 
-/* ===== TRAINING BLOCK ===== */
+/* ===== BLOCK ===== */
 .training {
   position: absolute;
   min-width: 120px;
@@ -199,13 +197,10 @@ body {
   <div class="main">
     <div class="house-wrapper">
       <div class="house">
-
         <div class="roof">
           <div class="roof-title">House title</div>
         </div>
-
         <div id="canvas" class="canvas"></div>
-
       </div>
     </div>
   </div>
@@ -254,28 +249,39 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-/* ===== LOCKED DRAG (X ONLY, WITH BOUNDS) ===== */
+/* ===== DRAG WITH ROW SNAP ===== */
 function startDrag(e, el) {
   if (e.target.classList.contains("resize-handle")) return;
 
   e.preventDefault();
+
   const startX = e.clientX;
+  const startY = e.clientY;
   const startLeft = el.offsetLeft;
-  const fixedTop = el.offsetTop;
+  const startTop = el.offsetTop;
 
   const houseWidth = document.querySelector(".house").offsetWidth;
 
   function onMove(ev) {
-    const deltaX = ev.clientX - startX;
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+
+    // X movement (bounded)
     const newLeft = Math.min(
       houseWidth - el.offsetWidth,
-      Math.max(0, startLeft + deltaX)
+      Math.max(0, startLeft + dx)
     );
+
     el.style.left = newLeft + "px";
-    el.style.top = fixedTop + "px"; // Y locked
+    el.style.top = startTop + dy + "px";
   }
 
   function onUp() {
+    // Snap to nearest row
+    const rawTop = el.offsetTop;
+    const snappedRow = Math.round(rawTop / ROW_HEIGHT);
+    el.style.top = snappedRow * ROW_HEIGHT + "px";
+
     document.removeEventListener("mousemove", onMove);
     document.removeEventListener("mouseup", onUp);
   }
@@ -284,7 +290,7 @@ function startDrag(e, el) {
   document.addEventListener("mouseup", onUp);
 }
 
-/* ===== RESIZE (LOCKED TO HOUSE WIDTH) ===== */
+/* ===== RESIZE ===== */
 function startResize(e, el) {
   e.stopPropagation();
   const startX = e.clientX;
