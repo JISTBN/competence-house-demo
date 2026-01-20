@@ -20,7 +20,8 @@ body { margin: 0; background: #f4f6f8; }
   width: 280px; background: #fafafa; border-right: 1px solid #ddd; padding: 16px;
 }
 .action {
-  margin-top: 12px; padding: 10px; border: 1px dashed #bbb; border-radius: 8px; cursor: pointer;
+  margin-top: 12px; padding: 10px; border: 1px dashed #bbb;
+  border-radius: 8px; cursor: pointer;
 }
 
 .editor-panel {
@@ -50,8 +51,8 @@ body { margin: 0; background: #f4f6f8; }
   clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
 }
 .roof-title {
-  position: absolute; bottom: 18px; width: 100%; text-align: center;
-  color: #fff; font-size: 20px; font-weight: 600;
+  position: absolute; bottom: 18px; width: 100%;
+  text-align: center; color: #fff; font-size: 20px; font-weight: 600;
 }
 
 .canvas { position: relative; margin-top: 24px; height: 450px; }
@@ -119,15 +120,66 @@ body { margin: 0; background: #f4f6f8; }
 <script>
 let selected = null;
 let counter = 1;
+
 const ROW_HEIGHT = 72;
+const DEFAULT_WIDTH = 220;
+const STEP_X = 10;
+
+function overlapsRect(rect, other) {
+  return !(
+    rect.right <= other.left ||
+    rect.left >= other.right ||
+    rect.bottom <= other.top ||
+    rect.top >= other.bottom
+  );
+}
+
+function findFreePosition(width) {
+  const canvas = document.getElementById("canvas");
+  const houseWidth = document.querySelector(".house").offsetWidth;
+  const blocks = [...document.querySelectorAll(".training")];
+
+  for (let row = 0; row < 50; row++) {
+    const top = row * ROW_HEIGHT;
+
+    for (let left = 0; left + width <= houseWidth; left += STEP_X) {
+      const testRect = {
+        left,
+        top,
+        right: left + width,
+        bottom: top + 56
+      };
+
+      const collision = blocks.some(b => {
+        const r = b.getBoundingClientRect();
+        const c = canvas.getBoundingClientRect();
+        const blockRect = {
+          left: r.left - c.left,
+          top: r.top - c.top,
+          right: r.right - c.left,
+          bottom: r.bottom - c.top
+        };
+        return overlapsRect(testRect, blockRect);
+      });
+
+      if (!collision) {
+        return { left, top };
+      }
+    }
+  }
+
+  return { left: 0, top: 0 };
+}
 
 function addTraining() {
   const el = document.createElement("div");
   el.className = "training green";
   el.textContent = "Block " + counter++;
-  el.style.left = "0px";
-  el.style.top = (counter - 1) * ROW_HEIGHT + "px";
-  el.style.width = "220px";
+  el.style.width = DEFAULT_WIDTH + "px";
+
+  const pos = findFreePosition(DEFAULT_WIDTH);
+  el.style.left = pos.left + "px";
+  el.style.top = pos.top + "px";
 
   const handle = document.createElement("div");
   handle.className = "resize-handle";
@@ -158,20 +210,9 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-/* ===== COLLISION CHECK ===== */
-function overlaps(a, b) {
-  return !(
-    a.right <= b.left ||
-    a.left >= b.right ||
-    a.bottom <= b.top ||
-    a.top >= b.bottom
-  );
-}
-
-/* ===== DRAG WITH COLLISION ===== */
+/* ===== DRAG + SNAP + COLLISION ===== */
 function startDrag(e, el) {
   if (e.target.classList.contains("resize-handle")) return;
-
   e.preventDefault();
 
   const startX = e.clientX;
@@ -184,13 +225,10 @@ function startDrag(e, el) {
     let newLeft = startLeft + (ev.clientX - startX);
     let newTop  = startTop  + (ev.clientY - startY);
 
-    // bounds
     newLeft = Math.min(houseWidth - el.offsetWidth, Math.max(0, newLeft));
 
     el.style.left = newLeft + "px";
     el.style.top  = newTop + "px";
-
-    resolveCollisions(el);
   }
 
   function onUp() {
@@ -202,32 +240,6 @@ function startDrag(e, el) {
 
   document.addEventListener("mousemove", onMove);
   document.addEventListener("mouseup", onUp);
-}
-
-function resolveCollisions(active) {
-  const blocks = document.querySelectorAll(".training");
-
-  blocks.forEach(b => {
-    if (b === active) return;
-
-    const a = active.getBoundingClientRect();
-    const c = b.getBoundingClientRect();
-
-    if (overlaps(a, c)) {
-      // try push right
-      const newLeft = active.offsetLeft + active.offsetWidth + 8;
-      const houseWidth = document.querySelector(".house").offsetWidth;
-
-      if (newLeft + b.offsetWidth <= houseWidth) {
-        b.style.left = newLeft + "px";
-        b.style.top = active.offsetTop + "px";
-      } else {
-        // push to next row
-        b.style.left = "0px";
-        b.style.top = (active.offsetTop + ROW_HEIGHT) + "px";
-      }
-    }
-  });
 }
 
 /* ===== RESIZE ===== */
