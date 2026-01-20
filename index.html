@@ -134,33 +134,42 @@ body {
   font-weight: 600;
 }
 
-/* ===== GRID ===== */
+/* ===== CANVAS ===== */
 .trainings {
   margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
-.w12 { grid-column: span 12; }
-.w6  { grid-column: span 6; }
-.w4  { grid-column: span 4; }
-.w3  { grid-column: span 3; }
-
-/* ===== TRAINING ===== */
+/* ===== TRAINING BLOCK ===== */
 .training {
+  position: relative;
+  min-width: 120px;
   height: 56px;
   border-radius: 12px;
+  background: #2ebf7f;
   display: flex;
   align-items: center;
   padding: 0 16px;
   color: white;
   cursor: pointer;
-  outline: 3px solid transparent;
 }
 
 .training.selected {
   outline: 3px solid #333;
+}
+
+/* ===== RESIZE HANDLE ===== */
+.resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  cursor: ew-resize;
+  background: rgba(255,255,255,0.35);
+  border-radius: 0 12px 12px 0;
 }
 </style>
 </head>
@@ -185,12 +194,6 @@ body {
         <button class="editor-btn green" onclick="setColor('green')">Green</button>
         <button class="editor-btn blue" onclick="setColor('blue')">Blue</button>
       </div>
-
-      <label>Width</label>
-      <div class="editor-row">
-        <button class="editor-btn" style="background:#777" onclick="resize(-1)">◀</button>
-        <button class="editor-btn" style="background:#777" onclick="resize(1)">▶</button>
-      </div>
     </div>
   </div>
 
@@ -213,13 +216,20 @@ body {
 <script>
 let selected = null;
 let counter = 1;
-const widths = ["w12","w6","w4","w3"];
 
 function addTraining() {
   const el = document.createElement("div");
-  el.className = "training green w12";
-  el.innerText = "Block " + counter++;
+  el.className = "training green";
+  el.style.width = "220px";
+  el.textContent = "Block " + counter++;
+
+  const handle = document.createElement("div");
+  handle.className = "resize-handle";
+  handle.onmousedown = e => startResize(e, el);
+
+  el.appendChild(handle);
   el.onclick = () => select(el);
+
   document.getElementById("trainings").appendChild(el);
 }
 
@@ -228,11 +238,12 @@ function select(el) {
   el.classList.add("selected");
   selected = el;
   document.getElementById("editorPanel").style.display = "block";
-  document.getElementById("titleInput").value = el.innerText;
+  document.getElementById("titleInput").value = el.firstChild.nodeValue;
 }
 
 function updateTitle() {
-  if (selected) selected.innerText = document.getElementById("titleInput").value;
+  if (!selected) return;
+  selected.firstChild.nodeValue = document.getElementById("titleInput").value;
 }
 
 function setColor(color) {
@@ -241,12 +252,30 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-function resize(dir) {
-  if (!selected) return;
-  const current = widths.findIndex(w => selected.classList.contains(w));
-  const next = Math.max(0, Math.min(widths.length-1, current + dir));
-  widths.forEach(w => selected.classList.remove(w));
-  selected.classList.add(widths[next]);
+/* ===== PIXEL RESIZE ===== */
+function startResize(e, el) {
+  e.stopPropagation();
+
+  const startX = e.clientX;
+  const startWidth = el.offsetWidth;
+  const houseWidth = document.querySelector(".house").offsetWidth;
+
+  function onMove(ev) {
+    const delta = ev.clientX - startX;
+    const newWidth = Math.min(
+      houseWidth - 16,
+      Math.max(120, startWidth + delta)
+    );
+    el.style.width = newWidth + "px";
+  }
+
+  function onUp() {
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
+  }
+
+  document.addEventListener("mousemove", onMove);
+  document.addEventListener("mouseup", onUp);
 }
 </script>
 
