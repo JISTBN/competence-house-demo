@@ -7,7 +7,6 @@
 <style>
 * { box-sizing: border-box; font-family: Segoe UI, Arial, sans-serif; }
 body { margin: 0; background: #f4f6f8; }
-
 .app { display: flex; height: 100vh; }
 
 .sidebar {
@@ -125,49 +124,55 @@ const ROW_HEIGHT = 72;
 const DEFAULT_WIDTH = 220;
 const STEP_X = 10;
 
-function overlapsRect(rect, other) {
+/* ===== OVERLAP CHECK ===== */
+function overlaps(a, b) {
   return !(
-    rect.right <= other.left ||
-    rect.left >= other.right ||
-    rect.bottom <= other.top ||
-    rect.top >= other.bottom
+    a.right <= b.left ||
+    a.left >= b.right ||
+    a.bottom <= b.top ||
+    a.top >= b.bottom
   );
 }
 
-function findFreePosition(width) {
+function wouldOverlap(el, left, top) {
   const canvas = document.getElementById("canvas");
+  const cRect = canvas.getBoundingClientRect();
+
+  const testRect = {
+    left,
+    top,
+    right: left + el.offsetWidth,
+    bottom: top + el.offsetHeight
+  };
+
+  return [...document.querySelectorAll(".training")].some(b => {
+    if (b === el) return false;
+
+    const r = b.getBoundingClientRect();
+    const bRect = {
+      left: r.left - cRect.left,
+      top: r.top - cRect.top,
+      right: r.right - cRect.left,
+      bottom: r.bottom - cRect.top
+    };
+
+    return overlaps(testRect, bRect);
+  });
+}
+
+/* ===== FIND FREE POSITION (FOR CREATE) ===== */
+function findFreePosition(width) {
   const houseWidth = document.querySelector(".house").offsetWidth;
-  const blocks = [...document.querySelectorAll(".training")];
 
   for (let row = 0; row < 50; row++) {
     const top = row * ROW_HEIGHT;
 
     for (let left = 0; left + width <= houseWidth; left += STEP_X) {
-      const testRect = {
-        left,
-        top,
-        right: left + width,
-        bottom: top + 56
-      };
-
-      const collision = blocks.some(b => {
-        const r = b.getBoundingClientRect();
-        const c = canvas.getBoundingClientRect();
-        const blockRect = {
-          left: r.left - c.left,
-          top: r.top - c.top,
-          right: r.right - c.left,
-          bottom: r.bottom - c.top
-        };
-        return overlapsRect(testRect, blockRect);
-      });
-
-      if (!collision) {
+      if (!wouldOverlap({ offsetWidth: width, offsetHeight: 56 }, left, top)) {
         return { left, top };
       }
     }
   }
-
   return { left: 0, top: 0 };
 }
 
@@ -210,7 +215,7 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-/* ===== DRAG + SNAP + COLLISION ===== */
+/* ===== DRAG – OVERLAP FORBUDT ===== */
 function startDrag(e, el) {
   if (e.target.classList.contains("resize-handle")) return;
   e.preventDefault();
@@ -221,19 +226,34 @@ function startDrag(e, el) {
   const startTop = el.offsetTop;
   const houseWidth = document.querySelector(".house").offsetWidth;
 
+  let lastGood = { left: startLeft, top: startTop };
+
   function onMove(ev) {
     let newLeft = startLeft + (ev.clientX - startX);
     let newTop  = startTop  + (ev.clientY - startY);
 
     newLeft = Math.min(houseWidth - el.offsetWidth, Math.max(0, newLeft));
 
-    el.style.left = newLeft + "px";
-    el.style.top  = newTop + "px";
+    if (!wouldOverlap(el, newLeft, newTop)) {
+      el.style.left = newLeft + "px";
+      el.style.top  = newTop + "px";
+      lastGood = { left: newLeft, top: newTop };
+    } else {
+      el.style.left = lastGood.left + "px";
+      el.style.top  = lastGood.top + "px";
+    }
   }
 
   function onUp() {
     const snappedRow = Math.round(el.offsetTop / ROW_HEIGHT);
-    el.style.top = snappedRow * ROW_HEIGHT + "px";
+    const snappedTop = snappedRow * ROW_HEIGHT;
+
+    if (!wouldOverlap(el, el.offsetLeft, snappedTop)) {
+      el.style.top = snappedTop + "px";
+    } else {
+      el.style.top = lastGood.top + "px";
+    }
+
     document.removeEventListener("mousemove", onMove);
     document.removeEventListener("mouseup", onUp);
   }
@@ -254,7 +274,10 @@ function startResize(e, el) {
       houseWidth - el.offsetLeft,
       Math.max(120, startWidth + (ev.clientX - startX))
     );
-    el.style.width = newWidth + "px";
+
+    if (!wouldOverlap(el, el.offsetLeft, el.offsetTop)) {
+      el.style.width = newWidth + "px";
+    }
   }
 
   function onUp() {
