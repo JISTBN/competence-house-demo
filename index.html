@@ -7,8 +7,10 @@
 <style>
 * { box-sizing: border-box; font-family: Segoe UI, Arial, sans-serif; }
 body { margin: 0; background: #f4f6f8; }
+
 .app { display: flex; height: 100vh; }
 
+/* SIDEBARS */
 .sidebar {
   width: 240px; background: #fff; border-right: 1px solid #ddd; padding-top: 16px;
 }
@@ -19,26 +21,28 @@ body { margin: 0; background: #f4f6f8; }
   width: 280px; background: #fafafa; border-right: 1px solid #ddd; padding: 16px;
 }
 .action {
-  margin-top: 12px; padding: 10px; border: 1px dashed #bbb;
-  border-radius: 8px; cursor: pointer;
+  margin-top: 12px; padding: 10px;
+  border: 1px dashed #bbb; border-radius: 8px; cursor: pointer;
 }
 
+/* EDITOR */
 .editor-panel {
   margin-top: 20px; padding-top: 16px; border-top: 1px solid #ddd;
 }
-.editor-panel label { font-size: 13px; display: block; margin-top: 12px; }
+.editor-panel label { font-size: 13px; margin-top: 12px; display: block; }
 .editor-panel input {
-  width: 100%; padding: 6px 8px; margin-top: 4px;
-  border-radius: 6px; border: 1px solid #ccc;
+  width: 100%; padding: 6px; margin-top: 4px;
 }
 .editor-row { display: flex; gap: 8px; margin-top: 8px; }
 .editor-btn {
-  flex: 1; padding: 8px; border-radius: 6px; border: none;
-  cursor: pointer; font-size: 13px; color: white;
+  flex: 1; padding: 8px; border: none; border-radius: 6px;
+  cursor: pointer; color: #fff;
 }
+
 .green { background: #2ebf7f; }
 .blue { background: #5bc0eb; }
 
+/* MAIN */
 .main { flex: 1; padding: 48px 24px; }
 
 .house-wrapper { display: flex; justify-content: center; }
@@ -46,7 +50,8 @@ body { margin: 0; background: #f4f6f8; }
 
 .roof {
   position: absolute; top: 0; left: 0; width: 100%; height: 110px;
-  background: #c62828; border-radius: 56px 56px 28px 28px;
+  background: #c62828;
+  border-radius: 56px 56px 28px 28px;
   clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
 }
 .roof-title {
@@ -54,18 +59,19 @@ body { margin: 0; background: #f4f6f8; }
   text-align: center; color: #fff; font-size: 20px; font-weight: 600;
 }
 
-.canvas { position: relative; margin-top: 24px; height: 450px; }
+.canvas {
+  position: relative; margin-top: 24px; height: 450px;
+}
 
+/* BLOCK */
 .training {
   position: absolute;
-  min-width: 120px;
   height: 56px;
   border-radius: 12px;
-  background: #2ebf7f;
   display: flex;
   align-items: center;
   padding: 0 16px;
-  color: white;
+  color: #fff;
   cursor: grab;
 }
 .training.selected { outline: 3px solid #333; }
@@ -119,173 +125,75 @@ body { margin: 0; background: #f4f6f8; }
 <script>
 let selected = null;
 let counter = 1;
-
 const ROW_HEIGHT = 72;
-const DEFAULT_WIDTH = 220;
-const STEP_X = 10;
 
-/* ===== OVERLAP CHECK ===== */
-function overlaps(a, b) {
-  return !(
-    a.right <= b.left ||
-    a.left >= b.right ||
-    a.bottom <= b.top ||
-    a.top >= b.bottom
-  );
+/* HELPERS */
+function getBlocksInRow(top) {
+  return [...document.querySelectorAll(".training")]
+    .filter(b => parseInt(b.style.top) === top);
 }
 
-function wouldOverlap(el, left, top) {
-  const canvas = document.getElementById("canvas");
-  const cRect = canvas.getBoundingClientRect();
+function recalcRow(top) {
+  const blocks = getBlocksInRow(top);
+  const houseWidth = document.querySelector(".house").offsetWidth;
+  const width = houseWidth / blocks.length;
 
-  const testRect = {
-    left,
-    top,
-    right: left + el.offsetWidth,
-    bottom: top + el.offsetHeight
-  };
-
-  return [...document.querySelectorAll(".training")].some(b => {
-    if (b === el) return false;
-
-    const r = b.getBoundingClientRect();
-    const bRect = {
-      left: r.left - cRect.left,
-      top: r.top - cRect.top,
-      right: r.right - cRect.left,
-      bottom: r.bottom - cRect.top
-    };
-
-    return overlaps(testRect, bRect);
+  blocks.forEach((b, i) => {
+    b.style.width = width + "px";
+    b.style.left = (i * width) + "px";
   });
 }
 
-/* ===== FIND FREE POSITION (FOR CREATE) ===== */
-function findFreePosition(width) {
-  const houseWidth = document.querySelector(".house").offsetWidth;
-
-  for (let row = 0; row < 50; row++) {
-    const top = row * ROW_HEIGHT;
-
-    for (let left = 0; left + width <= houseWidth; left += STEP_X) {
-      if (!wouldOverlap({ offsetWidth: width, offsetHeight: 56 }, left, top)) {
-        return { left, top };
-      }
-    }
-  }
-  return { left: 0, top: 0 };
-}
-
+/* CREATE */
 function addTraining() {
   const el = document.createElement("div");
   el.className = "training green";
   el.textContent = "Block " + counter++;
-  el.style.width = DEFAULT_WIDTH + "px";
 
-  const pos = findFreePosition(DEFAULT_WIDTH);
-  el.style.left = pos.left + "px";
-  el.style.top = pos.top + "px";
-
-  const handle = document.createElement("div");
-  handle.className = "resize-handle";
-  handle.onmousedown = e => startResize(e, el);
-
-  el.appendChild(handle);
-  el.onmousedown = e => startDrag(e, el);
-  el.onclick = () => select(el);
+  const row = 0;
+  el.style.top = row + "px";
 
   document.getElementById("canvas").appendChild(el);
+  recalcRow(row);
+
+  el.onclick = () => select(el);
 }
 
+/* SELECT */
 function select(el) {
   document.querySelectorAll(".training").forEach(t => t.classList.remove("selected"));
   el.classList.add("selected");
   selected = el;
   document.getElementById("editorPanel").style.display = "block";
-  document.getElementById("titleInput").value = el.firstChild.nodeValue;
+  document.getElementById("titleInput").value = el.textContent;
 }
 
 function updateTitle() {
-  if (selected) selected.firstChild.nodeValue = document.getElementById("titleInput").value;
+  if (selected) selected.textContent = document.getElementById("titleInput").value;
 }
 
+/* COLOR */
 function setColor(color) {
   if (!selected) return;
-  selected.classList.remove("green","blue");
+  selected.classList.remove("green", "blue");
   selected.classList.add(color);
 }
 
-/* ===== DRAG – OVERLAP FORBUDT ===== */
+/* DRAG WITH ROW SNAP */
 function startDrag(e, el) {
-  if (e.target.classList.contains("resize-handle")) return;
-  e.preventDefault();
-
-  const startX = e.clientX;
   const startY = e.clientY;
-  const startLeft = el.offsetLeft;
   const startTop = el.offsetTop;
-  const houseWidth = document.querySelector(".house").offsetWidth;
 
-  let lastGood = { left: startLeft, top: startTop };
+  function onUp(ev) {
+    const newRow = Math.round((startTop + (ev.clientY - startY)) / ROW_HEIGHT) * ROW_HEIGHT;
+    el.style.top = newRow + "px";
 
-  function onMove(ev) {
-    let newLeft = startLeft + (ev.clientX - startX);
-    let newTop  = startTop  + (ev.clientY - startY);
+    recalcRow(startTop);
+    recalcRow(newRow);
 
-    newLeft = Math.min(houseWidth - el.offsetWidth, Math.max(0, newLeft));
-
-    if (!wouldOverlap(el, newLeft, newTop)) {
-      el.style.left = newLeft + "px";
-      el.style.top  = newTop + "px";
-      lastGood = { left: newLeft, top: newTop };
-    } else {
-      el.style.left = lastGood.left + "px";
-      el.style.top  = lastGood.top + "px";
-    }
-  }
-
-  function onUp() {
-    const snappedRow = Math.round(el.offsetTop / ROW_HEIGHT);
-    const snappedTop = snappedRow * ROW_HEIGHT;
-
-    if (!wouldOverlap(el, el.offsetLeft, snappedTop)) {
-      el.style.top = snappedTop + "px";
-    } else {
-      el.style.top = lastGood.top + "px";
-    }
-
-    document.removeEventListener("mousemove", onMove);
     document.removeEventListener("mouseup", onUp);
   }
 
-  document.addEventListener("mousemove", onMove);
-  document.addEventListener("mouseup", onUp);
-}
-
-/* ===== RESIZE ===== */
-function startResize(e, el) {
-  e.stopPropagation();
-  const startX = e.clientX;
-  const startWidth = el.offsetWidth;
-  const houseWidth = document.querySelector(".house").offsetWidth;
-
-  function onMove(ev) {
-    const newWidth = Math.min(
-      houseWidth - el.offsetLeft,
-      Math.max(120, startWidth + (ev.clientX - startX))
-    );
-
-    if (!wouldOverlap(el, el.offsetLeft, el.offsetTop)) {
-      el.style.width = newWidth + "px";
-    }
-  }
-
-  function onUp() {
-    document.removeEventListener("mousemove", onMove);
-    document.removeEventListener("mouseup", onUp);
-  }
-
-  document.addEventListener("mousemove", onMove);
   document.addEventListener("mouseup", onUp);
 }
 </script>
