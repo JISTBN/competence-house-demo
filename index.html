@@ -5,141 +5,57 @@
 <title>Competence House – Editor</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  font-family: Segoe UI, Arial, sans-serif;
-}
+* { box-sizing: border-box; font-family: Segoe UI, Arial, sans-serif; }
+body { margin: 0; background: #f4f6f8; }
 
-body {
-  margin: 0;
-  background: #f4f6f8;
-}
+.app { display: flex; height: 100vh; }
 
-.app {
-  display: flex;
-  height: 100vh;
-}
-
-/* ===== SIDEBARS ===== */
 .sidebar {
-  width: 240px;
-  background: #fff;
-  border-right: 1px solid #ddd;
-  padding-top: 16px;
+  width: 240px; background: #fff; border-right: 1px solid #ddd; padding-top: 16px;
 }
-
-.menu-item {
-  padding: 14px 20px;
-}
-
-.menu-item.active {
-  background: #eef3ff;
-  font-weight: 600;
-}
+.menu-item { padding: 14px 20px; }
+.menu-item.active { background: #eef3ff; font-weight: 600; }
 
 .subpanel {
-  width: 280px;
-  background: #fafafa;
-  border-right: 1px solid #ddd;
-  padding: 16px;
+  width: 280px; background: #fafafa; border-right: 1px solid #ddd; padding: 16px;
 }
-
 .action {
-  margin-top: 12px;
-  padding: 10px;
-  border: 1px dashed #bbb;
-  border-radius: 8px;
-  cursor: pointer;
+  margin-top: 12px; padding: 10px; border: 1px dashed #bbb; border-radius: 8px; cursor: pointer;
 }
 
-/* ===== EDITOR PANEL ===== */
 .editor-panel {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #ddd;
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid #ddd;
 }
-
-.editor-panel label {
-  font-size: 13px;
-  display: block;
-  margin-top: 12px;
-}
-
+.editor-panel label { font-size: 13px; display: block; margin-top: 12px; }
 .editor-panel input {
-  width: 100%;
-  padding: 6px 8px;
-  margin-top: 4px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  width: 100%; padding: 6px 8px; margin-top: 4px;
+  border-radius: 6px; border: 1px solid #ccc;
 }
-
-.editor-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
+.editor-row { display: flex; gap: 8px; margin-top: 8px; }
 .editor-btn {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 13px;
-  color: white;
+  flex: 1; padding: 8px; border-radius: 6px; border: none;
+  cursor: pointer; font-size: 13px; color: white;
 }
-
 .green { background: #2ebf7f; }
-.blue  { background: #5bc0eb; }
+.blue { background: #5bc0eb; }
 
-/* ===== MAIN ===== */
-.main {
-  flex: 1;
-  padding: 48px 24px;
-}
+.main { flex: 1; padding: 48px 24px; }
 
-/* ===== HOUSE ===== */
-.house-wrapper {
-  display: flex;
-  justify-content: center;
-}
+.house-wrapper { display: flex; justify-content: center; }
+.house { width: 700px; padding-top: 110px; position: relative; }
 
-.house {
-  width: 700px;
-  padding-top: 110px;
-  position: relative;
-}
-
-/* ===== ROOF ===== */
 .roof {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 110px;
-  background: #c62828;
-  border-radius: 56px 56px 28px 28px;
+  position: absolute; top: 0; left: 0; width: 100%; height: 110px;
+  background: #c62828; border-radius: 56px 56px 28px 28px;
   clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
 }
-
 .roof-title {
-  position: absolute;
-  bottom: 18px;
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 600;
+  position: absolute; bottom: 18px; width: 100%; text-align: center;
+  color: #fff; font-size: 20px; font-weight: 600;
 }
 
-/* ===== CANVAS ===== */
-.canvas {
-  position: relative;
-  margin-top: 24px;
-  height: 450px;
-}
+.canvas { position: relative; margin-top: 24px; height: 450px; }
 
-/* ===== BLOCK ===== */
 .training {
   position: absolute;
   min-width: 120px;
@@ -152,18 +68,11 @@ body {
   color: white;
   cursor: grab;
 }
+.training.selected { outline: 3px solid #333; }
 
-.training.selected {
-  outline: 3px solid #333;
-}
-
-/* ===== RESIZE HANDLE ===== */
 .resize-handle {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 10px;
-  height: 100%;
+  position: absolute; right: 0; top: 0;
+  width: 10px; height: 100%;
   cursor: ew-resize;
   background: rgba(255,255,255,0.35);
   border-radius: 0 12px 12px 0;
@@ -249,7 +158,17 @@ function setColor(color) {
   selected.classList.add(color);
 }
 
-/* ===== DRAG WITH ROW SNAP ===== */
+/* ===== COLLISION CHECK ===== */
+function overlaps(a, b) {
+  return !(
+    a.right <= b.left ||
+    a.left >= b.right ||
+    a.bottom <= b.top ||
+    a.top >= b.bottom
+  );
+}
+
+/* ===== DRAG WITH COLLISION ===== */
 function startDrag(e, el) {
   if (e.target.classList.contains("resize-handle")) return;
 
@@ -259,35 +178,56 @@ function startDrag(e, el) {
   const startY = e.clientY;
   const startLeft = el.offsetLeft;
   const startTop = el.offsetTop;
-
   const houseWidth = document.querySelector(".house").offsetWidth;
 
   function onMove(ev) {
-    const dx = ev.clientX - startX;
-    const dy = ev.clientY - startY;
+    let newLeft = startLeft + (ev.clientX - startX);
+    let newTop  = startTop  + (ev.clientY - startY);
 
-    // X movement (bounded)
-    const newLeft = Math.min(
-      houseWidth - el.offsetWidth,
-      Math.max(0, startLeft + dx)
-    );
+    // bounds
+    newLeft = Math.min(houseWidth - el.offsetWidth, Math.max(0, newLeft));
 
     el.style.left = newLeft + "px";
-    el.style.top = startTop + dy + "px";
+    el.style.top  = newTop + "px";
+
+    resolveCollisions(el);
   }
 
   function onUp() {
-    // Snap to nearest row
-    const rawTop = el.offsetTop;
-    const snappedRow = Math.round(rawTop / ROW_HEIGHT);
+    const snappedRow = Math.round(el.offsetTop / ROW_HEIGHT);
     el.style.top = snappedRow * ROW_HEIGHT + "px";
-
     document.removeEventListener("mousemove", onMove);
     document.removeEventListener("mouseup", onUp);
   }
 
   document.addEventListener("mousemove", onMove);
   document.addEventListener("mouseup", onUp);
+}
+
+function resolveCollisions(active) {
+  const blocks = document.querySelectorAll(".training");
+
+  blocks.forEach(b => {
+    if (b === active) return;
+
+    const a = active.getBoundingClientRect();
+    const c = b.getBoundingClientRect();
+
+    if (overlaps(a, c)) {
+      // try push right
+      const newLeft = active.offsetLeft + active.offsetWidth + 8;
+      const houseWidth = document.querySelector(".house").offsetWidth;
+
+      if (newLeft + b.offsetWidth <= houseWidth) {
+        b.style.left = newLeft + "px";
+        b.style.top = active.offsetTop + "px";
+      } else {
+        // push to next row
+        b.style.left = "0px";
+        b.style.top = (active.offsetTop + ROW_HEIGHT) + "px";
+      }
+    }
+  });
 }
 
 /* ===== RESIZE ===== */
