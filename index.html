@@ -1,13 +1,82 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Competence House – Editor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Segoe UI, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ===== SIDEMENU ===== */
+    .sidebar {
+      width: 240px;
+      background: #ffffff;
+      border-right: 1px solid #ddd;
+      padding-top: 16px;
+    }
+
+    .menu-item {
+      padding: 14px 20px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .menu-item.active {
+      background: #eef3ff;
+      font-weight: 600;
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      flex: 1;
+      padding: 24px;
+    }
+
+    .placeholder {
+      border: 2px dashed #ccc;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      font-size: 18px;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>Competence House Editor</h1>
-  <p>Hvis du kan se denne tekst, virker Azure Static Web App.</p>
+  <div class="app">
+
+    <!-- VENSTREMENU -->
+    <div class="sidebar">
+      <div class="menu-item active">House Builder</div>
+      <div class="menu-item">Training Cart</div>
+      <div class="menu-item">Competencies</div>
+      <div class="menu-item">House Info</div>
+    </div>
+
+    <!-- ARBEJDSFLADE -->
+    <div class="main">
+      <div class="placeholder">
+        Editor canvas (tom)
+      </div>
+    </div>
+
+  </div>
 
 </body>
 </html>
