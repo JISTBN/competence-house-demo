@@ -15,7 +15,6 @@
       background: #f4f6f8;
     }
 
-    /* ===== APP LAYOUT ===== */
     .app {
       display: flex;
       height: 100vh;
@@ -32,7 +31,6 @@
     .menu-item {
       padding: 14px 20px;
       cursor: pointer;
-      color: #333;
     }
 
     .menu-item.active {
@@ -51,23 +49,6 @@
     .subpanel h3 {
       margin-top: 0;
       font-size: 16px;
-      margin-bottom: 12px;
-    }
-
-    .subpanel-item {
-      padding: 10px 12px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      color: #333;
-    }
-
-    .subpanel-item.active {
-      background: #e8ecff;
-      font-weight: 600;
-    }
-
-    .subpanel-item.disabled {
-      color: #aaa;
     }
 
     .action {
@@ -79,6 +60,30 @@
       cursor: pointer;
       font-size: 14px;
     }
+
+    .editor-panel {
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid #ddd;
+    }
+
+    .editor-panel h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .color-btn {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      margin-right: 8px;
+      color: white;
+      font-size: 13px;
+    }
+
+    .green { background: #2ebf7f; }
+    .blue { background: #5bc0eb; }
 
     /* ===== MAIN ===== */
     .main {
@@ -132,12 +137,16 @@
     .training {
       height: 56px;
       border-radius: 12px;
-      background: #2ebf7f;
       display: flex;
       align-items: center;
       padding: 0 16px;
-      color: #ffffff;
-      font-weight: 500;
+      color: white;
+      cursor: pointer;
+      outline: 3px solid transparent;
+    }
+
+    .training.selected {
+      outline: 3px solid #333;
     }
   </style>
 </head>
@@ -156,27 +165,18 @@
 
   <!-- SECONDARY PANEL -->
   <div class="subpanel">
-    <h3>House Builder</h3>
+    <h3>Content</h3>
 
-    <div class="subpanel-item active">Content</div>
-    <div class="subpanel-item disabled">Structure</div>
-    <div class="subpanel-item disabled">Dependencies</div>
-    <div class="subpanel-item disabled">Preview</div>
+    <div class="action" onclick="addTraining()">➕ Job function or foundation</div>
 
-    <div class="action" onclick="addTraining()">
-      ➕ Job function or foundation
-    </div>
-
-    <div class="action">
-      ➕ Add cross-functional content
-    </div>
-
-    <div class="action">
-      ➕ Create group
+    <div class="editor-panel" id="editorPanel" style="display:none;">
+      <h4>Selected block</h4>
+      <button class="color-btn green" onclick="setColor('green')">Green</button>
+      <button class="color-btn blue" onclick="setColor('blue')">Blue</button>
     </div>
   </div>
 
-  <!-- MAIN / CANVAS -->
+  <!-- MAIN -->
   <div class="main">
     <div class="house-wrapper">
       <div class="house">
@@ -185,9 +185,7 @@
           <div class="roof-title">House title</div>
         </div>
 
-        <div id="trainings" class="trainings">
-          <!-- nye bjælker kommer her -->
-        </div>
+        <div id="trainings" class="trainings"></div>
 
       </div>
     </div>
@@ -197,16 +195,32 @@
 
 <script>
   let counter = 1;
+  let selected = null;
 
   function addTraining() {
     const container = document.getElementById("trainings");
 
     const div = document.createElement("div");
-    div.className = "training";
+    div.className = "training green";
     div.innerText = "Job function " + counter;
+
+    div.onclick = () => selectTraining(div);
 
     counter++;
     container.appendChild(div);
+  }
+
+  function selectTraining(el) {
+    document.querySelectorAll(".training").forEach(t => t.classList.remove("selected"));
+    el.classList.add("selected");
+    selected = el;
+    document.getElementById("editorPanel").style.display = "block";
+  }
+
+  function setColor(color) {
+    if (!selected) return;
+    selected.classList.remove("green", "blue");
+    selected.classList.add(color);
   }
 </script>
 
