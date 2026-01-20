@@ -39,7 +39,7 @@ body {
 }
 
 .subpanel {
-  width: 260px;
+  width: 280px;
   background: #fafafa;
   border-right: 1px solid #ddd;
   padding: 16px;
@@ -53,23 +53,45 @@ body {
   cursor: pointer;
 }
 
+/* ===== EDITOR PANEL ===== */
 .editor-panel {
-  margin-top: 16px;
-  padding-top: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid #ddd;
 }
 
 .editor-panel label {
-  display: block;
   font-size: 13px;
-  margin-top: 10px;
+  display: block;
+  margin-top: 12px;
 }
 
-.editor-panel select {
+.editor-panel input {
   width: 100%;
-  padding: 6px;
+  padding: 6px 8px;
   margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
+
+.editor-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.editor-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: white;
+}
+
+.green { background: #2ebf7f; }
+.blue  { background: #5bc0eb; }
 
 /* ===== MAIN ===== */
 .main {
@@ -120,16 +142,15 @@ body {
   gap: 16px;
 }
 
-/* widths */
-.w-12 { grid-column: span 12; }
-.w-6  { grid-column: span 6; }
-.w-4  { grid-column: span 4; }
+.w12 { grid-column: span 12; }
+.w6  { grid-column: span 6; }
+.w4  { grid-column: span 4; }
+.w3  { grid-column: span 3; }
 
 /* ===== TRAINING ===== */
 .training {
   height: 56px;
   border-radius: 12px;
-  background: #2ebf7f;
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -156,14 +177,20 @@ body {
     <div class="action" onclick="addTraining()">➕ Job function or foundation</div>
 
     <div class="editor-panel" id="editorPanel" style="display:none;">
-      <label>
-        Width
-        <select onchange="setWidth(this.value)">
-          <option value="w-12">100%</option>
-          <option value="w-6">50%</option>
-          <option value="w-4">33%</option>
-        </select>
-      </label>
+      <label>Title</label>
+      <input id="titleInput" oninput="updateTitle()" />
+
+      <label>Color</label>
+      <div class="editor-row">
+        <button class="editor-btn green" onclick="setColor('green')">Green</button>
+        <button class="editor-btn blue" onclick="setColor('blue')">Blue</button>
+      </div>
+
+      <label>Width</label>
+      <div class="editor-row">
+        <button class="editor-btn" style="background:#777" onclick="resize(-1)">◀</button>
+        <button class="editor-btn" style="background:#777" onclick="resize(1)">▶</button>
+      </div>
     </div>
   </div>
 
@@ -186,10 +213,11 @@ body {
 <script>
 let selected = null;
 let counter = 1;
+const widths = ["w12","w6","w4","w3"];
 
 function addTraining() {
   const el = document.createElement("div");
-  el.className = "training w-12";
+  el.className = "training green w12";
   el.innerText = "Block " + counter++;
   el.onclick = () => select(el);
   document.getElementById("trainings").appendChild(el);
@@ -200,12 +228,25 @@ function select(el) {
   el.classList.add("selected");
   selected = el;
   document.getElementById("editorPanel").style.display = "block";
+  document.getElementById("titleInput").value = el.innerText;
 }
 
-function setWidth(w) {
+function updateTitle() {
+  if (selected) selected.innerText = document.getElementById("titleInput").value;
+}
+
+function setColor(color) {
   if (!selected) return;
-  selected.classList.remove("w-12", "w-6", "w-4");
-  selected.classList.add(w);
+  selected.classList.remove("green","blue");
+  selected.classList.add(color);
+}
+
+function resize(dir) {
+  if (!selected) return;
+  const current = widths.findIndex(w => selected.classList.contains(w));
+  const next = Math.max(0, Math.min(widths.length-1, current + dir));
+  widths.forEach(w => selected.classList.remove(w));
+  selected.classList.add(widths[next]);
 }
 </script>
 
