@@ -43,7 +43,8 @@
     /* ===== MAIN ===== */
     .main {
       flex: 1;
-      padding: 24px;
+      padding: 40px 24px; /* ekstra top-plads så taget ikke klippes */
+      overflow: auto;
     }
 
     /* ===== HOUSE ===== */
@@ -54,23 +55,25 @@
 
     .house {
       width: 700px;
-      min-height: 400px;
+      min-height: 420px;
       background: #ffffff;
-      border: 2px solid #bbb;
-      border-radius: 8px;
+      border-radius: 16px;
       position: relative;
-      padding-top: 70px;
+      padding-top: 80px; /* plads til taget */
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
 
     /* ===== ROOF ===== */
     .roof {
       position: absolute;
-      top: -60px;
+      top: 0;
       left: 0;
       width: 100%;
-      height: 60px;
+      height: 70px;
       background: #0a2a6b;
       clip-path: polygon(0 100%, 50% 0, 100% 100%);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
     }
   </style>
 </head>
