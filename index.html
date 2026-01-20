@@ -133,16 +133,23 @@ function getBlocksInRow(top) {
     .filter(b => parseInt(b.style.top) === top);
 }
 
+const GAP = 12; // afstand mellem klodser i px
+
 function recalcRow(top) {
   const blocks = getBlocksInRow(top);
+  if (blocks.length === 0) return;
+
   const houseWidth = document.querySelector(".house").offsetWidth;
-  const width = houseWidth / blocks.length;
+  const totalGap = (blocks.length - 1) * GAP;
+  const availableWidth = houseWidth - totalGap;
+  const width = availableWidth / blocks.length;
 
   blocks.forEach((b, i) => {
     b.style.width = width + "px";
-    b.style.left = (i * width) + "px";
+    b.style.left = (i * (width + GAP)) + "px";
   });
 }
+
 
 /* CREATE */
 function addTraining() {
