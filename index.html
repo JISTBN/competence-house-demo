@@ -56,23 +56,31 @@
     .house {
       width: 700px;
       position: relative;
-      padding-top: 110px; /* plads til større tag */
+      padding-top: 110px; /* plads til taget */
     }
 
-    /* ===== ROOF (FULDBREDDE, BLØD, RØD) ===== */
+    /* ===== ROOF ===== */
     .roof {
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;              /* følger husets bredde */
+      width: 100%;
       height: 110px;
-      background: #c62828;      /* rød */
-
-      /* Meget bløde hjørner */
-      border-radius: 48px 48px 24px 24px;
-
-      /* Tag-form */
+      background: #c62828; /* rød */
+      border-radius: 56px 56px 28px 28px;
       clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    }
+
+    /* ===== ROOF TITLE ===== */
+    .roof-title {
+      position: absolute;
+      bottom: 18px;
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
     }
   </style>
 </head>
@@ -93,8 +101,13 @@
     <div class="main">
       <div class="house-wrapper">
         <div class="house">
-          <div class="roof"></div>
+
+          <div class="roof">
+            <div class="roof-title">House title</div>
+          </div>
+
           <!-- indhold kommer senere -->
+
         </div>
       </div>
     </div>
