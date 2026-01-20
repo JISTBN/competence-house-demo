@@ -72,6 +72,20 @@
       font-size: 14px;
     }
 
+    .editor-panel label {
+      font-size: 13px;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .editor-panel input {
+      width: 100%;
+      padding: 6px 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
     .color-btn {
       padding: 8px 10px;
       border-radius: 6px;
@@ -80,6 +94,7 @@
       margin-right: 8px;
       color: white;
       font-size: 13px;
+      margin-top: 6px;
     }
 
     .green { background: #2ebf7f; }
@@ -171,6 +186,13 @@
 
     <div class="editor-panel" id="editorPanel" style="display:none;">
       <h4>Selected block</h4>
+
+      <label>
+        Title
+        <input id="titleInput" type="text" oninput="updateTitle()" />
+      </label>
+
+      <label>Color</label>
       <button class="color-btn green" onclick="setColor('green')">Green</button>
       <button class="color-btn blue" onclick="setColor('blue')">Blue</button>
     </div>
@@ -214,13 +236,20 @@
     document.querySelectorAll(".training").forEach(t => t.classList.remove("selected"));
     el.classList.add("selected");
     selected = el;
+
     document.getElementById("editorPanel").style.display = "block";
+    document.getElementById("titleInput").value = el.innerText;
   }
 
   function setColor(color) {
     if (!selected) return;
     selected.classList.remove("green", "blue");
     selected.classList.add(color);
+  }
+
+  function updateTitle() {
+    if (!selected) return;
+    selected.innerText = document.getElementById("titleInput").value;
   }
 </script>
 
