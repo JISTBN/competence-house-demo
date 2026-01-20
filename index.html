@@ -1,204 +1,172 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8" />
-  <title>Competence House – Editor</title>
+<meta charset="UTF-8" />
+<title>Competence House – Editor</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Segoe UI, Arial, sans-serif;
-    }
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Segoe UI, Arial, sans-serif;
+}
 
-    body {
-      margin: 0;
-      background: #f4f6f8;
-    }
+body {
+  margin: 0;
+  background: #f4f6f8;
+}
 
-    .app {
-      display: flex;
-      height: 100vh;
-    }
+.app {
+  display: flex;
+  height: 100vh;
+}
 
-    /* ===== PRIMARY SIDEBAR ===== */
-    .sidebar {
-      width: 240px;
-      background: #ffffff;
-      border-right: 1px solid #ddd;
-      padding-top: 16px;
-    }
+/* ===== SIDEBARS ===== */
+.sidebar {
+  width: 240px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  padding-top: 16px;
+}
 
-    .menu-item {
-      padding: 14px 20px;
-      cursor: pointer;
-    }
+.menu-item {
+  padding: 14px 20px;
+  cursor: pointer;
+}
 
-    .menu-item.active {
-      background: #eef3ff;
-      font-weight: 600;
-    }
+.menu-item.active {
+  background: #eef3ff;
+  font-weight: 600;
+}
 
-    /* ===== SECONDARY PANEL ===== */
-    .subpanel {
-      width: 260px;
-      background: #fafafa;
-      border-right: 1px solid #ddd;
-      padding: 16px;
-    }
+.subpanel {
+  width: 260px;
+  background: #fafafa;
+  border-right: 1px solid #ddd;
+  padding: 16px;
+}
 
-    .subpanel h3 {
-      margin-top: 0;
-      font-size: 16px;
-    }
+.action {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-    .action {
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: #ffffff;
-      border: 1px dashed #bbb;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.editor-panel {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+}
 
-    .editor-panel {
-      margin-top: 20px;
-      padding-top: 12px;
-      border-top: 1px solid #ddd;
-    }
+.editor-panel label {
+  display: block;
+  font-size: 13px;
+  margin-top: 10px;
+}
 
-    .editor-panel h4 {
-      margin: 0 0 8px;
-      font-size: 14px;
-    }
+.editor-panel select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
 
-    .editor-panel label {
-      font-size: 13px;
-      display: block;
-      margin-top: 10px;
-    }
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  padding: 48px 24px;
+  overflow: auto;
+}
 
-    .editor-panel input {
-      width: 100%;
-      padding: 6px 8px;
-      margin-top: 4px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
+/* ===== HOUSE ===== */
+.house-wrapper {
+  display: flex;
+  justify-content: center;
+}
 
-    .color-btn {
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      margin-right: 8px;
-      color: white;
-      font-size: 13px;
-      margin-top: 6px;
-    }
+.house {
+  width: 700px;
+  padding-top: 110px;
+  position: relative;
+}
 
-    .green { background: #2ebf7f; }
-    .blue { background: #5bc0eb; }
+/* ===== ROOF ===== */
+.roof {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 110px;
+  background: #c62828;
+  border-radius: 56px 56px 28px 28px;
+  clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+}
 
-    /* ===== MAIN ===== */
-    .main {
-      flex: 1;
-      padding: 56px 24px;
-      overflow: auto;
-    }
+.roof-title {
+  position: absolute;
+  bottom: 18px;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+}
 
-    /* ===== HOUSE ===== */
-    .house-wrapper {
-      display: flex;
-      justify-content: center;
-    }
+/* ===== GRID ===== */
+.trainings {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
 
-    .house {
-      width: 700px;
-      position: relative;
-      padding-top: 110px;
-    }
+/* widths */
+.w-12 { grid-column: span 12; }
+.w-6  { grid-column: span 6; }
+.w-4  { grid-column: span 4; }
 
-    /* ===== ROOF ===== */
-    .roof {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 110px;
-      background: #c62828;
-      border-radius: 56px 56px 28px 28px;
-      clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
-    }
+/* ===== TRAINING ===== */
+.training {
+  height: 56px;
+  border-radius: 12px;
+  background: #2ebf7f;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: white;
+  cursor: pointer;
+  outline: 3px solid transparent;
+}
 
-    .roof-title {
-      position: absolute;
-      bottom: 18px;
-      width: 100%;
-      text-align: center;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    /* ===== TRAININGS ===== */
-    .trainings {
-      margin-top: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .training {
-      height: 56px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      color: white;
-      cursor: pointer;
-      outline: 3px solid transparent;
-    }
-
-    .training.selected {
-      outline: 3px solid #333;
-    }
-  </style>
+.training.selected {
+  outline: 3px solid #333;
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <!-- PRIMARY SIDEBAR -->
   <div class="sidebar">
     <div class="menu-item active">House Builder</div>
-    <div class="menu-item">Training Cart</div>
-    <div class="menu-item">Competencies</div>
-    <div class="menu-item">House Info</div>
   </div>
 
-  <!-- SECONDARY PANEL -->
   <div class="subpanel">
-    <h3>Content</h3>
-
     <div class="action" onclick="addTraining()">➕ Job function or foundation</div>
 
     <div class="editor-panel" id="editorPanel" style="display:none;">
-      <h4>Selected block</h4>
-
       <label>
-        Title
-        <input id="titleInput" type="text" oninput="updateTitle()" />
+        Width
+        <select onchange="setWidth(this.value)">
+          <option value="w-12">100%</option>
+          <option value="w-6">50%</option>
+          <option value="w-4">33%</option>
+        </select>
       </label>
-
-      <label>Color</label>
-      <button class="color-btn green" onclick="setColor('green')">Green</button>
-      <button class="color-btn blue" onclick="setColor('blue')">Blue</button>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="house-wrapper">
       <div class="house">
@@ -216,41 +184,29 @@
 </div>
 
 <script>
-  let counter = 1;
-  let selected = null;
+let selected = null;
+let counter = 1;
 
-  function addTraining() {
-    const container = document.getElementById("trainings");
+function addTraining() {
+  const el = document.createElement("div");
+  el.className = "training w-12";
+  el.innerText = "Block " + counter++;
+  el.onclick = () => select(el);
+  document.getElementById("trainings").appendChild(el);
+}
 
-    const div = document.createElement("div");
-    div.className = "training green";
-    div.innerText = "Job function " + counter;
+function select(el) {
+  document.querySelectorAll(".training").forEach(t => t.classList.remove("selected"));
+  el.classList.add("selected");
+  selected = el;
+  document.getElementById("editorPanel").style.display = "block";
+}
 
-    div.onclick = () => selectTraining(div);
-
-    counter++;
-    container.appendChild(div);
-  }
-
-  function selectTraining(el) {
-    document.querySelectorAll(".training").forEach(t => t.classList.remove("selected"));
-    el.classList.add("selected");
-    selected = el;
-
-    document.getElementById("editorPanel").style.display = "block";
-    document.getElementById("titleInput").value = el.innerText;
-  }
-
-  function setColor(color) {
-    if (!selected) return;
-    selected.classList.remove("green", "blue");
-    selected.classList.add(color);
-  }
-
-  function updateTitle() {
-    if (!selected) return;
-    selected.innerText = document.getElementById("titleInput").value;
-  }
+function setWidth(w) {
+  if (!selected) return;
+  selected.classList.remove("w-12", "w-6", "w-4");
+  selected.classList.add(w);
+}
 </script>
 
 </body>
