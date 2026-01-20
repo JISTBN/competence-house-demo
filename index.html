@@ -43,7 +43,7 @@
     /* ===== MAIN ===== */
     .main {
       flex: 1;
-      padding: 48px 24px;
+      padding: 56px 24px;
       overflow: auto;
     }
 
@@ -56,24 +56,23 @@
     .house {
       width: 700px;
       position: relative;
-      padding-top: 90px; /* plads til taget */
+      padding-top: 110px; /* plads til større tag */
     }
 
-    /* ===== ROOF (BLØD & MODERNE) ===== */
+    /* ===== ROOF (FULDBREDDE, BLØD, RØD) ===== */
     .roof {
       position: absolute;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 260px;
-      height: 90px;
-      background: #0a2a6b;
+      left: 0;
+      width: 100%;              /* følger husets bredde */
+      height: 110px;
+      background: #c62828;      /* rød */
 
-      /* blød, moderne form */
-      border-radius: 120px 120px 24px 24px;
+      /* Meget bløde hjørner */
+      border-radius: 48px 48px 24px 24px;
 
-      /* trekant-effekt via clip */
-      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      /* Tag-form */
+      clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
     }
   </style>
 </head>
@@ -95,7 +94,7 @@
       <div class="house-wrapper">
         <div class="house">
           <div class="roof"></div>
-          <!-- huset er bevidst usynligt -->
+          <!-- indhold kommer senere -->
         </div>
       </div>
     </div>
